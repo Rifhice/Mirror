@@ -14,6 +14,9 @@ finish = False
 name = ["pierre", "jacques"]
 
 
+if not os.path.exists("./Model/"):
+    os.makedirs("./Model/")
+
 class StateHandler(Thread):
     def __init__(self):
         Thread.__init__(self)
@@ -21,7 +24,6 @@ class StateHandler(Thread):
     def run(self):
         global isTakingPicture
         global isBuilt
-        global isStarted
         global name
         global finish
         for line in sys.stdin:
@@ -64,7 +66,9 @@ def guess(rgb_small_frame, display):
         matches = face_recognition.face_distance(
             known_face_encodings, face_encoding)
         name = "Unknown"
-        closest = min(float(s) for s in matches)
+        closest = 0
+        if len(matches) > 0:
+            closest = min(float(s) for s in matches)
         if closest < 0.5:
             i = 0
             for match in matches:
