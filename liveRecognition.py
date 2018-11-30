@@ -11,6 +11,7 @@ from threading import Thread
 isStarted = False
 isBuilt = False
 isTakingPicture = False
+finish = False
 name = ["pierre", "jacques"]
 sys.stdout.write("status/stopped\n")
 
@@ -24,6 +25,7 @@ class StateHandler(Thread):
         global isBuilt
         global isStarted
         global name
+        global finish
         for line in sys.stdin:
             words = line.split("/")
             if words[0] == "picture":
@@ -39,8 +41,8 @@ class StateHandler(Thread):
                 sys.stdout.write("status/stopped\n")
             elif words[0] == "exit\n":
                 break
-        print("exiting")
-        os._exit(1)
+        sys.stdout.write("status/exited\n")
+        finish = True
 
 
 def build():
@@ -115,7 +117,7 @@ ret, frame = video_capture.read()
 known_face_encodings = []
 known_face_names = []
 cpt = 0
-while True:
+while not(finish):
     if isStarted:
         if not(isBuilt):
             known_face_encodings, known_face_names = build()
@@ -136,7 +138,8 @@ while True:
                 break
     elif not(isStarted) and isTakingPicture:
         ret, frame = video_capture.read()
-        cv2.imwrite("./Model/" + " ".join(name).rstrip("\n") + ".png", frame)
+        cv2.imwrite(
+            "./Model/" + " ".join(name).rstrip("\n") + ".png", frame)
         isTakingPicture = False
         isStarted = True
         isBuilt = False

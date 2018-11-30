@@ -11,10 +11,12 @@ class Recognizer extends Component {
             faces: [],
             firstname: "",
             lastname: "",
-            error: ""
+            error: "",
+            serverStatus: ""
         }
         sock.on("connect", () => {
             console.log("Connected !")
+            this.setState({ serverStatus: "" })
         })
         sock.on("faces", (faces) => {
             console.log(faces)
@@ -28,10 +30,13 @@ class Recognizer extends Component {
             console.log(error)
             this.setState({ error })
         })
+        sock.on("connect_error", () => {
+            this.setState({ serverStatus: "The server is offline" })
+        })
         this.start = this.start.bind(this)
         this.stop = this.stop.bind(this)
         this.exit = this.exit.bind(this)
-        this.newPicture = this.newPicture.bind(this)
+        this.restart = this.restart.bind(this)
         this.picture = this.picture.bind(this)
         this.error = this.error.bind(this)
     }
@@ -50,8 +55,8 @@ class Recognizer extends Component {
     picture(name) {
         sock.emit("picture", name)
     }
-    newPicture(image) {
-        sock.emit("image", image)
+    restart() {
+        sock.emit("message", "restart")
     }
 
     error() {
@@ -67,6 +72,7 @@ class Recognizer extends Component {
     render() {
         return (
             <div>
+                <p>{this.state.serverStatus}</p>
                 <p>{this.state.status}</p>
                 <h1>{
                     this.error()
@@ -75,7 +81,8 @@ class Recognizer extends Component {
                     <Faces faces={this.state.faces}></Faces>
                     <button onClick={this.start}>Start</button>
                     <button onClick={this.stop}>Stop</button>
-                    <button onClick={this.exit}>Exit</button>
+                    <button onClick={this.exit}>Kill</button>
+                    <button onClick={this.restart}>Restart</button>
                 </div>
                 <div>
                     <label>
