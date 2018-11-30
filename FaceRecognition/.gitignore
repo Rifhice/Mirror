@@ -1,4 +1,4 @@
 /node_modules
-/Model
+/Model/*
 /package-lock.json
 /.vscode

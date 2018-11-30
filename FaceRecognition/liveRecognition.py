@@ -8,12 +8,10 @@ from os.path import isfile, join
 import numpy
 from threading import Thread
 
-isStarted = False
 isBuilt = False
 isTakingPicture = False
 finish = False
 name = ["pierre", "jacques"]
-sys.stdout.write("status/stopped\n")
 
 
 class StateHandler(Thread):
@@ -30,18 +28,11 @@ class StateHandler(Thread):
             words = line.split("/")
             if words[0] == "picture":
                 isTakingPicture = True
-                isStarted = False
-                sys.stdout.write("status/picture\n")
                 name = words[1:]
             elif words[0] == "start\n":
-                isStarted = True
                 isBuilt = False
-            elif words[0] == "stop\n":
-                isStarted = False
-                sys.stdout.write("status/stopped\n")
             elif words[0] == "exit\n":
                 break
-        sys.stdout.write("status/exited\n")
         finish = True
 
 
@@ -118,7 +109,7 @@ known_face_encodings = []
 known_face_names = []
 cpt = 0
 while not(finish):
-    if isStarted:
+    if not(isTakingPicture):
         if not(isBuilt):
             known_face_encodings, known_face_names = build()
             isBuilt = True
@@ -136,16 +127,14 @@ while not(finish):
                 cpt = 0
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-    elif not(isStarted) and isTakingPicture:
+    else:
         ret, frame = video_capture.read()
         cv2.imwrite(
             "./Model/" + " ".join(name).rstrip("\n") + ".png", frame)
         isTakingPicture = False
-        isStarted = True
         isBuilt = False
 
 
 # Release handle to the webcam
-sys.stdout.write("Close")
 video_capture.release()
 cv2.destroyAllWindows()

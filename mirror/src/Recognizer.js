@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { Button, Label, Input } from 'semantic-ui-react'
 import Capturer from './Capture'
 import Faces from './Faces'
+import uuidv1 from 'uuid/v1';
 const sock = require('socket.io-client')('http://localhost:8081');
 
 class Recognizer extends Component {
@@ -12,48 +14,38 @@ class Recognizer extends Component {
             firstname: "",
             lastname: "",
             error: "",
-            serverStatus: ""
+            serverOnline: ""
         }
         sock.on("connect", () => {
-            console.log("Connected !")
-            this.setState({ serverStatus: "" })
+            this.setState({ serverOnline: true })
         })
         sock.on("faces", (faces) => {
-            console.log(faces)
             this.setState({ faces: faces })
         })
         sock.on("status", (status) => {
-            console.log(status)
-            this.setState({ status })
+            this.setState({ status: JSON.parse(status) })
         })
         sock.on("err", (error) => {
-            console.log(error)
             this.setState({ error })
         })
         sock.on("connect_error", () => {
-            this.setState({ serverStatus: "The server is offline" })
+            this.setState({ serverOnline: false })
         })
-        this.start = this.start.bind(this)
-        this.stop = this.stop.bind(this)
         this.exit = this.exit.bind(this)
         this.restart = this.restart.bind(this)
         this.picture = this.picture.bind(this)
+        this.newPicture = this.newPicture.bind(this)
         this.error = this.error.bind(this)
     }
-    start() {
-        this.setState({ isStarted: true, isTakingPicture: false })
-        sock.emit("message", "start")
-    }
-    stop() {
-        this.setState({ isStarted: false, faces: [] })
-        sock.emit("message", "stop")
-    }
     exit() {
-        this.setState({ isStarted: true })
+        this.setState({ isStarted: true, faces: [] })
         sock.emit("message", "exit")
     }
-    picture(name) {
-        sock.emit("picture", name)
+    picture(data) {
+        sock.emit("picture", data)
+    }
+    newPicture(data) {
+        sock.emit("newPicture", JSON.stringify(data))
     }
     restart() {
         sock.emit("message", "restart")
@@ -72,32 +64,41 @@ class Recognizer extends Component {
     render() {
         return (
             <div>
-                <p>{this.state.serverStatus}</p>
-                <p>{this.state.status}</p>
-                <h1>{
-                    this.error()
-                }</h1>
-                <div>
-                    <Faces faces={this.state.faces}></Faces>
-                    <button onClick={this.start}>Start</button>
-                    <button onClick={this.stop}>Stop</button>
-                    <button onClick={this.exit}>Kill</button>
-                    <button onClick={this.restart}>Restart</button>
-                </div>
-                <div>
-                    <label>
-                        Firstname:
-                     <input type="text" name="name" onChange={event => this.setState({ firstname: event.target.value })} />
-                    </label>
-                    <label>
-                        Lastname:
-                     <input type="text" name="name" onChange={event => this.setState({ lastname: event.target.value })} />
-                    </label>
-                </div>
-                <input type="submit" value="Add picture" onClick={() => this.state.firstname.trim() !== "" && this.state.lastname.trim() !== ""
-                    ? this.picture([this.state.firstname, this.state.lastname])
-                    : ""
-                } />
+                {this.state.serverOnline
+                    ? <div>
+                        <h1>{this.error()}</h1>
+                        <h1>{this.state.status.status}</h1>
+                        <div>
+                            <Faces faces={this.state.faces.map(face => face.name)}></Faces>
+                            {this.state.status.isStarted
+                                ? <Button onClick={this.exit}>Stop</Button>
+                                : <Button onClick={this.restart}>Restart</Button>
+                            }
+                        </div>
+                        <div>
+                            <Label>
+                                Firstname:
+                     <Input type="text" name="name" onChange={event => this.setState({ firstname: event.target.value })} />
+                            </Label>
+                            <Label>
+                                Lastname:
+                     <Input type="text" name="name" onChange={event => this.setState({ lastname: event.target.value })} />
+                            </Label>
+                        </div>
+                        <Button onClick={() => this.state.firstname.trim() !== "" && this.state.lastname.trim() !== ""
+                            ? this.picture([this.state.firstname, this.state.lastname, uuidv1()])
+                            : ""
+                        }>Add picture</Button>
+                        <Button onClick={() => this.state.firstname.trim() !== "" && this.state.lastname.trim() !== ""
+                            ? this.newPicture({
+                                filename: `${this.state.firstname} ${this.state.lastname} ${uuidv1()}`,
+                                image: ""
+                            })
+                            : ""
+                        }>Create picture</Button>
+                    </div>
+                    : <p>The facial recognition module is offline</p>
+                }
             </div>
         );
     }
