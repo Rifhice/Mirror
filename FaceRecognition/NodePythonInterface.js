@@ -15,7 +15,7 @@ let state = {
 
 const updateState = (newState) => {
     state = { ...state, ...newState }
-    broadcast("status", JSON.stringify(state))
+    broadcast("action", { type: "UPDATE_FACIAL_RECOGNITION_STATUS", payload: state })
 }
 
 const writeToPythonProcess = (toWrite) => {
@@ -58,7 +58,7 @@ const startPythonProcess = () => {
                     }
                 }
                 else
-                    broadcast("err", splitted[1])
+                    broadcast("action", { type: "ERROR_FACIAL_RECOGNITION", payload: splitted[1] })
             }
         }
         else {
@@ -82,6 +82,7 @@ pythonProcess = startPythonProcess()
 io.on('connection', (socket) => {
     sockets.push(socket)
     console.log('A client is connected');
+    socket.emit("action", { type: "UPDATE_FACIAL_RECOGNITION_STATUS", payload: state })
     socket.on("message", (data) => {
         console.log(`Received : ${data}`)
         switch (data) {
@@ -121,7 +122,7 @@ setInterval(
         let guessed = guesses.filter(guess => guess.lastSeen.isAfter(moment().subtract(15, 'seconds')))
         if (guessed.map(guess => guess.name).sort().join(',') !== oldGuessed.map(guess => guess.name).sort().join(',')) {
             oldGuessed = guessed
-            broadcast("faces", guessed.map(guess => ({ ...guess, lastSeen: undefined })))
+            broadcast("action", { type: "UPDATE_FACIAL_RECOGNITION_FACES", payload: guessed.map(guess => ({ ...guess, lastSeen: undefined })) })
         }
     }, 500
 )

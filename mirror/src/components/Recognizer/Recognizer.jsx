@@ -1,76 +1,28 @@
 import React, { Component } from 'react';
 import { Button, Label, Input } from 'semantic-ui-react'
-import Capturer from './Capture'
-import Faces from './Faces'
+import Capturer from '../../Capture'
+import Faces from '../../Faces'
 import uuidv1 from 'uuid/v1';
-const sock = require('socket.io-client')('http://localhost:8081');
 
 class Recognizer extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            status: "",
-            faces: [],
             firstname: "",
             lastname: "",
-            error: "",
-            serverOnline: ""
-        }
-        sock.on("connect", () => {
-            this.setState({ serverOnline: true })
-        })
-        sock.on("faces", (faces) => {
-            this.setState({ faces: faces })
-        })
-        sock.on("status", (status) => {
-            this.setState({ status: JSON.parse(status) })
-        })
-        sock.on("err", (error) => {
-            this.setState({ error })
-        })
-        sock.on("connect_error", () => {
-            this.setState({ serverOnline: false })
-        })
-        this.exit = this.exit.bind(this)
-        this.restart = this.restart.bind(this)
-        this.picture = this.picture.bind(this)
-        this.newPicture = this.newPicture.bind(this)
-        this.error = this.error.bind(this)
-    }
-    exit() {
-        this.setState({ isStarted: true, faces: [] })
-        sock.emit("message", "exit")
-    }
-    picture(data) {
-        sock.emit("picture", data)
-    }
-    newPicture(data) {
-        sock.emit("newPicture", JSON.stringify(data))
-    }
-    restart() {
-        sock.emit("message", "restart")
-    }
-
-    error() {
-        if (this.state.error) {
-            setTimeout(() => this.setState({ error: "" }), 4000)
-            return `Error : ${this.state.error}`
-        }
-        else {
-            return ""
         }
     }
 
     render() {
+        const { t, i18n } = this.props;
         return (
             <div>
-                {this.state.serverOnline
+                {this.props.FacialRecognition.isConnected
                     ? <div>
-                        <h1>{this.error()}</h1>
-                        <h1>{this.state.status.status}</h1>
+                        <h1>{this.props.FacialRecognition.status}</h1>
                         <div>
-                            <Faces faces={this.state.faces.map(face => face.name)}></Faces>
-                            {this.state.status.isStarted
+                            <Faces faces={this.props.FacialRecognition.faces.map(face => face.name)}></Faces>
+                            {this.props.FacialRecognition.isStarted
                                 ? <Button onClick={this.exit}>Stop</Button>
                                 : <Button onClick={this.restart}>Restart</Button>
                             }
@@ -97,7 +49,7 @@ class Recognizer extends Component {
                             : ""
                         }>Create picture</Button>
                     </div>
-                    : <p>The facial recognition module is offline</p>
+                    : <p>{t('FACIAL_OFFLINE')}</p>
                 }
             </div>
         );
