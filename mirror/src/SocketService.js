@@ -1,3 +1,4 @@
+import actions from './redux/actions/FacialRecognition.action'
 const socket = require('socket.io-client')('http://localhost:8081');
 
 socket.on("error", (error) => {
@@ -11,13 +12,13 @@ export default {
         )
 
         socket.on("connect", () => {
-            store.dispatch({ type: "UPDATE_FACIAL_RECOGNITION_STATUS", payload: { isConnected: true } })
+            store.dispatch({ type: actions.UPDATE_FACIAL_RECOGNITION_STATUS, payload: { isConnected: true } })
             console.log("Connected !")
         })
 
         socket.on("connect_error", () => {
             if (store.getState().FacialRecognition.isConnected)
-                store.dispatch({ type: "UPDATE_FACIAL_RECOGNITION_STATUS", payload: { isConnected: false } })
+                store.dispatch({ type: actions.UPDATE_FACIAL_RECOGNITION_STATUS, payload: { isConnected: false } })
             console.log("Can't connect !")
         })
     },

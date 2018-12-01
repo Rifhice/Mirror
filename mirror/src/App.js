@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Recognizer from './containers/Recognizer.container'
+import Dashboard from './dashboard'
 import { Provider } from 'react-redux'
 import configureStore from './redux/configureStore'
 import { ConnectedRouter } from 'connected-react-router'
@@ -15,7 +15,7 @@ class App extends Component {
         <ConnectedRouter history={history}>
           <div className="App">
             <Switch>
-              <Route exact path="/" component={Recognizer} />
+              <Route exact path="/" component={Dashboard} />
               <Redirect to="/" />
             </Switch>
           </div>
