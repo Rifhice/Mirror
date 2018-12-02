@@ -25,8 +25,8 @@ class Weather extends Component {
                     this.props.weather.description
                         ? <div>
                             <img src={`http://openweathermap.org/img/w/${this.props.weather.icon}.png`}></img>
-                            <p>{this.props.weather.temp} C°</p>
-                            <p>{this.props.weather.temp_min} C° - {this.props.weather.temp_max} C°</p>
+                            <p>{this.props.weather.temp} {this.props.config.metrics !== "imperial" ? "C°" : "°F"}</p>
+                            <p>{this.props.weather.temp_min} {this.props.config.metrics !== "imperial" ? "C°" : "°F"} - {this.props.weather.temp_max} {this.props.config.metrics !== "imperial" ? "C°" : "°F"}</p>
                             <p>{`${this.props.weather.description[0].toUpperCase()}${this.props.weather.description.slice(1)}`}</p>
                         </div>
                         : <Loader active intermediate></Loader>

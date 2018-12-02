@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import Recognizer from './containers/Recognizer.container'
 import Weather from './containers/Weather.container'
+import Time from './containers/Time.container'
 
 
 const dictionnary = {
     "greetings": (config) => <Recognizer config={config}></Recognizer>,
-    "time": (config) => <p>Salut</p>,
+    "time": (config) => <Time></Time>,
     "weather": (config) => <Weather config={config}></Weather>
 }
 

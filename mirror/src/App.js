@@ -8,6 +8,7 @@ import { ConnectedRouter } from 'connected-react-router'
 import { history } from './history'
 import { Route, Switch, Redirect } from "react-router-dom";
 import config from './config'
+import moment_locale from 'moment/min/locales.min'
 
 global.config = config
 
