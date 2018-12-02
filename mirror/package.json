@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "connected-react-router": "^4.5.0",
     "dotenv": "^6.1.0",
     "i18next": "^12.1.0",

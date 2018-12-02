@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import Recognizer from './containers/Recognizer.container'
+import Weather from './containers/Weather.container'
 
 
 const dictionnary = {
     "greetings": (config) => <Recognizer config={config}></Recognizer>,
-    "time": (config) => <p>Salut</p>
+    "time": (config) => <p>Salut</p>,
+    "weather": (config) => <Weather config={config}></Weather>
 }
 
 export default {

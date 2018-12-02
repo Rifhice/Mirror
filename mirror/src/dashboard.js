@@ -20,12 +20,15 @@ class Dashboard extends Component {
                         "height": 1,
                         "config": {}
                     },
-                    "default/time/2": {
+                    "default/weather/2": {
                         "x": 0,
                         "y": 1,
                         "width": 1,
                         "height": 3,
-                        "config": {}
+                        "config": {
+                            location: "Montpellier",
+                            metrics: "metric"
+                        }
                     },
                     "default/greetings/3": {
                         "x": 1,

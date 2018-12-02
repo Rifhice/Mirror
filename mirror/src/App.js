@@ -7,6 +7,9 @@ import configureStore from './redux/configureStore'
 import { ConnectedRouter } from 'connected-react-router'
 import { history } from './history'
 import { Route, Switch, Redirect } from "react-router-dom";
+import config from './config'
+
+global.config = config
 
 class App extends Component {
   render() {

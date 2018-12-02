@@ -1,0 +1,3 @@
+export default {
+    "FETCHED_WEATHER_DATA": "FETCHED_WEATHER_DATA"
+}
